@@ -26,39 +26,24 @@
         <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ frappe.format_value(item.amount, currency=doc.currency) }}</td> 
       </tr> 
       {% endfor %}
+      
       <!-- เพิ่มแถวสำหรับแสดงข้อมูล Reseller และ Company Name -->
       <tr>
-  <td colspan="7" style="border: 1px solid #000; padding: 8px; text-align: left;">
-    {% if doc.supplier_group == 'FOREIGN' %}
-      {% if doc.supplier_name in ['Sangfor', 'SOPHOS LTD'] %}
-        <!-- FOREIGN + Sangfor หรือ SOPHOS -->
-        <strong>Reseller:</strong> {{ doc.reseller or "" }}<br>
-        <strong>Address:</strong> {{ doc.reseller_address or "" }}<br><br>
-        <strong>Company Name:</strong> {{ doc.user or "" }}<br>
-        <strong>Address:</strong> {{ doc.user_address or "" }}
-      {% else %}
-        <!-- FOREIGN + แบรนด์อื่น -->
-        <strong>Reseller:</strong> {{ doc.partner_customer_address or "" }}<br>
-        <strong>Address:</strong> {{ doc.partner_customer_full_address or "" }}<br><br>
-        <strong>Company Name:</strong> {{ doc.endcustomer_name or "" }}<br>
-        <strong>Address:</strong> {{ doc.endcustomer_address or "" }}
-      {% endif %}
-    {% else %}
-      <!-- DOMESTIC -->
-      <strong>Reseller:</strong> {{ doc.partner_customer_address or "" }}<br>
-      <strong>Address:</strong> {{ doc.partner_customer_full_address or "" }}<br><br>
-      <strong>Company Name:</strong> {{ doc.endcustomer_name or "" }}<br>
-      <strong>Address:</strong> {{ doc.endcustomer_address or "" }}
-    {% endif %}
+        <td colspan="7" style="border: 1px solid #000; padding: 8px; text-align: left;">
+          {% if doc.supplier_name in ['Sangfor Technologies (Hong Kong) Limited', 'SOPHOS LTD'] %}
+            <strong>Reseller:</strong> {{ doc.get('reseller', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('reseller_address', '') }}<br><br>
+            <strong>Company Name:</strong> {{ doc.get('user', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('user_address', '') }}
+          {% else %}
+            <strong>Reseller:</strong> {{ doc.get('partner_customer_address', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
+            <strong>Company Name:</strong> {{ doc.get('endcustomer_name', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
+          {% endif %}
 
-    <br><br>
-    <strong>Quote ID:</strong>
-    {% if doc.supplier_name == 'HPE' %}
-      {{ doc.hpe_claim_code or "" }}
-    {% else %}
-      {{ doc.quote_id or "" }}
-    {% endif %}
-        
+          <br><br>
+          <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
         </td>
       </tr>
     </tbody> 
