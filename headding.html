@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Base Styles */
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Layout */
+        .row {
+            display: flex;
+            margin-bottom: 15px;
+            padding-left: 0;
+        }
+
+        .col-xs-6 {
+            width: 50%;
+            padding-right: 10px;
+        }
+
+        .col-xs-6:first-child {
+            padding-left: 0;
+            margin-left: 0;
+        }
+
+        .col-xs-6:last-child {
+            padding-right: 0;
+            padding-left: 10px;
+        }
+
+        /* Header Styles */
+        .section-header {
+            padding: 8px;
+            padding-right: 30px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .po-header {
+            text-align: right;
+            margin-right: 5px;
+        }
+
+        .draft-status {
+            text-align: center;
+            color: #8b0000;
+            font-weight: bold;
+            font-size: 16px;
+            padding: 8px;
+            border: 2px solid #8b0000;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        /* Table Styles */
+        .info-table {
+            width: 45%;
+            margin-left: auto;
+            margin-top: 0;
+            border-collapse: collapse;
+        }
+
+        .info-table td:first-child {
+            width: 50px;
+            text-align: left;
+            padding-right: 8px;
+            padding-left: 8px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .info-table td:last-child {
+            width: 120px;
+            text-align: left;
+            padding-left: 5px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .info-table td {
+            padding: 5px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        /* Box Styles */
+        .address-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            min-height: 80px;
+        }
+
+        .terms-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Text Elements */
+        .supplier-name, .warehouse-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .tax-id {
+            display: block;
+            margin-top: 0;
+            font-size: 10px;
+        }
+
+        .terms-left, .terms-right {
+            flex: 1;
+            padding: 0 15px;
+        }
+
+        .terms-label {
+            font-weight: bold;
+            font-size: 10px;
+            display: inline-block;
+        }
+
+        .terms-value {
+            font-size: 10px;
+            display: inline-block;
+            padding-left: 30px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Draft Status -->
+    <div class="row margin-bottom">
+        <div class="col-xs-6">
+            {% if doc.docstatus == 0 %}
+            <div class="draft-status">DRAFT</div>
+            {% endif %}
+        </div>
+        <div class="col-xs-6"></div>
+    </div>
+
+    <!-- Document Header -->
+    <div class="row margin-bottom">
+        <div class="col-xs-6"></div>
+        <div class="col-xs-6">
+            <div class="section-header po-header">Purchase Order</div>
+            <table class="info-table">
+                <tr>
+                    <td>Date:</td>
+                    <td>{{ doc.transaction_date or doc.posting_date }}</td>
+                </tr>
+                <tr>
+                    <td>No:</td>
+                    <td>{{ doc.name }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Address Information -->
+    <div class="row margin-bottom">
+        <div class="col-xs-6">
+            <div class="section-header">Vendor Address:</div>
+            <div class="address-box">
+                <span class="supplier-name">{{ doc.supplier_name or "N/A" }}</span>
+                {{ doc.address_display or doc.supplier_address or "N/A" }}<br>
+                <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ doc.tax_id or "N/A" }}</span>
+            </div>
+        </div>
+        <div class="col-xs-6">
+            <div class="section-header">Ship To:</div>
+            <div class="address-box">
+                <span class="warehouse-name">{{ doc.set_warehouse or "N/A" }}</span>
+                {{ doc.shipping_address_display or doc.address_display or "N/A" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Information -->
+    <div class="row margin-bottom">
+        <div class="col-xs-12">
+            <div class="terms-box">
+                <div class="terms-left">
+                    <span class="terms-label">Payment Term:</span>
+                    <span class="terms-value">{{ doc.payment_terms_template or "NET 30 DAYS" }}</span>
+                </div>
+                <div class="terms-right">
+                    <span class="terms-label">Delivery Date:</span>
+                    <span class="terms-value">{{ doc.schedule_date or "N/A" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

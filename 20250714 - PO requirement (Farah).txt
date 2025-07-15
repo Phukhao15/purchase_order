@@ -1,0 +1,131 @@
+"1. ยังไม่ได้ทำให้ แต่แนวทางแบบของ Sales Invoice - CN
+2. NAV form ---- Foreign supplier
+	- พิมพ์ 	reseller <-- customer
+		end cust <-- end_customer
+	- ยกเว้น Sangfor and SOPHOS
+		reseller <-- reseller_address
+		end cust <-- user_address
+
+	Quote Id <-- PO.quote_id, except HPE <-- hpe_claim_code
+
+3. item.discount ตัดทิ้ง
+4. summary amount: ไทยบาท, ถ้าเป็น Foreign ==> English money
+5. Footer 1 person : Aiuthorized Signature
+6. Shippint Term:
+	- NAV มีค่านี้สำหรับแต่ละ supplier
+	- ใน ERPNext ไม่มี field นี้,  คงจะสร้างขึ้นมา และ import ข้อมูล from NAV --> ERPNext
+7. ข้อความ Not Allow ใน NAV header ---- ไม่ต้องมีก็ได้
+8. ข้อความ Pls refer to PO........ ใน NAV Form ขอคงไว้
+	แต่  ref: ________ ไม่ต้องมี
+	เพราะใน detail line จะมี SO# อยู่
+9. ให้ทีม ERPNext ศึกษาการทำงานของ Get Items from Sales Order
+	- filter ????? ใช้อย่างไร"
+
+----------------------
+print format ต้นฉบับ:	Sales Invoice - CN 
+
+Header part
+-------------
+Date	transaction_date
+page	n/a
+vendor addr	address_display
+Ship to		shipping_address_display
+
+payment term	payment_terms_template
+Delivery date	schedule_date
+
+----
+item details
+-------------
+item.item_code
+item.description
+item.warehouse
+item.sales_order
+item.qty
+item.base_rate
+item.base_amount
+------------------
+supplier_group		Foreign/Domestic
+default_currency	USD-P/THB
+ITG-JE-ACC-PEY_Header.html:                
+	<td>{{frappe.utils.money_in_thai (doc.amount)}}</td>
+	==> สามร้อยบาทห้าสิบสตางค์
+	<td>{{frappe.utils.money_in_words (doc.amount)}}</td>
+	==> Three Hundred .....
+
+-----
+TOTAL
+---------
+net goods/service	. base_total / total   				--- A
+discount		. base_discount_amount / discount_amount	--- B
+total			. = A - B
+VAT 0 or 7%		. Purchase Taxes and Charges -- detail line
+			- item.rate ( 0 or 7 )
+			- item.base_tax_amount / tax_amount		--- C
+Total			. A - B + C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-
+-------
+purcahse_order
+
+
+date ->  transaction_date
+page -> n/a
+No -> Doc.name
+
+vendor Address -> address_dissplay
+
+ship to : -> shipping_address_
+
+
+payment Term ->
+Delivery Date -> schedule_date
+
+
+itemcode -> 
+item -> decsiption
+location -> warehouse
+so No.  -> sale_order
+quantity-> qty
+unit price -> base_rate
+Discount n/a
+Amount -> billed_amt
+
+
+
+base_total = thb 
+total = currecy_default
+GREP - R

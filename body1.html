@@ -1,0 +1,66 @@
+<div class="margin-top"> 
+  <table class='table table-bordered table-condensed' style="width: 100%; border-collapse: collapse; border: 1px solid #000;"> 
+    <caption><strong> </strong></caption> 
+    <thead> 
+      <tr style="background-color: #f0f0f0;"> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Item Code</th> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Item Description</th> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Location</th> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">So No.</th> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Quantity</th> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Unit Price</th> 
+        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Amount</th> 
+      </tr> 
+    </thead>
+    <tbody> 
+      {% for item in doc.items %} 
+      <tr> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.item_code }}</td> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+          {{ item.description or item.item_name }}
+        </td> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.warehouse or "N/A" }}</td> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.sales_order or "N/A" }}</td> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.qty }}</td> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ frappe.format_value(item.rate, currency=doc.currency) }}</td> 
+        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ frappe.format_value(item.amount, currency=doc.currency) }}</td> 
+      </tr> 
+      {% endfor %}
+      <!-- เพิ่มแถวสำหรับแสดงข้อมูล Reseller และ Company Name -->
+      <tr>
+  <td colspan="7" style="border: 1px solid #000; padding: 8px; text-align: left;">
+    {% if doc.supplier_group == 'FOREIGN' %}
+      {% if doc.supplier_name in ['Sangfor', 'SOPHOS LTD'] %}
+        <!-- FOREIGN + Sangfor หรือ SOPHOS -->
+        <strong>Reseller:</strong> {{ doc.reseller or "" }}<br>
+        <strong>Address:</strong> {{ doc.reseller_address or "" }}<br><br>
+        <strong>Company Name:</strong> {{ doc.user or "" }}<br>
+        <strong>Address:</strong> {{ doc.user_address or "" }}
+      {% else %}
+        <!-- FOREIGN + แบรนด์อื่น -->
+        <strong>Reseller:</strong> {{ doc.partner_customer_address or "" }}<br>
+        <strong>Address:</strong> {{ doc.partner_customer_full_address or "" }}<br><br>
+        <strong>Company Name:</strong> {{ doc.endcustomer_name or "" }}<br>
+        <strong>Address:</strong> {{ doc.endcustomer_address or "" }}
+      {% endif %}
+    {% else %}
+      <!-- DOMESTIC -->
+      <strong>Reseller:</strong> {{ doc.partner_customer_address or "" }}<br>
+      <strong>Address:</strong> {{ doc.partner_customer_full_address or "" }}<br><br>
+      <strong>Company Name:</strong> {{ doc.endcustomer_name or "" }}<br>
+      <strong>Address:</strong> {{ doc.endcustomer_address or "" }}
+    {% endif %}
+
+    <br><br>
+    <strong>Quote ID:</strong>
+    {% if doc.supplier_name == 'HPE' %}
+      {{ doc.hpe_claim_code or "" }}
+    {% else %}
+      {{ doc.quote_id or "" }}
+    {% endif %}
+        
+        </td>
+      </tr>
+    </tbody> 
+  </table> 
+</div>
