@@ -28,7 +28,6 @@
         }
 
         .items-table td {
-            border: 1px solid #000;
             padding: 8px 4px;
             text-align: center;
             font-size: 10px;
@@ -103,25 +102,26 @@
                 
                 <!-- เพิ่มแถวสำหรับแสดงข้อมูล Reseller และ Company Name -->
                 <tr>
-                    <td colspan="7" class="reseller-info">
-                        {% if doc.supplier_name in ['Sangfor Technologies (Hong Kong) Limited', 'SOPHOS LTD'] %}
-                            <strong>Reseller:</strong> {{ doc.get('reseller', '') }}<br>
-                            <strong>Address:</strong> {{ doc.get('reseller_address', '') }}<br><br>
-                            <strong>Company Name:</strong> {{ doc.get('user', '') }}<br>
-                            <strong>Address:</strong> {{ doc.get('user_address', '') }}
-                        {% else %}
-                            <strong>Reseller:</strong> {{ doc.get('partner_customer_address', '') }}<br>
-                            <strong>Address:</strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
-                            <strong>Company Name:</strong> {{ doc.get('endcustomer_name', '') }}<br>
-                            <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
-                        {% endif %}
+    <td colspan="7" style="text-align: left; font-size: 10px; line-height: 1.4; padding: 8px;">
+        {% if doc.supplier_name in ['Sangfor Technologies (Hong Kong) Limited', 'SOPHOS LTD'] %}
+            <strong>Reseller:</strong> {{ doc.get('reseller', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('reseller_address', '') }}<br><br>
+            <strong>Company Name:</strong> {{ doc.get('user', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('user_address', '') }}
+        {% else %}
+            <strong>Reseller:</strong> {{ doc.get('partner_customer_address', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
+            <strong>Company Name:</strong> {{ doc.get('endcustomer_name', '') }}<br>
+            <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
+        {% endif %}
 
-                        {% if doc.supplier_name != 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
-                        <br><br>
-                        <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
-                        {% endif %}
-                    </td>
-                </tr>
+        {% if doc.supplier_name != 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
+        <br><br>
+        <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
+        {% endif %}
+    </td>
+</tr>
+
             </tbody>
         </table>
     </div>

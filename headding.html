@@ -14,7 +14,7 @@
             font-size: 12px;
             margin: 0;
             padding: 20px;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #000;
         }
 
@@ -35,13 +35,13 @@
         }
 
         /* Header Styles */
-        .section-header {
-            font-size: 12px;
-            padding: 8px;
-            padding-right: 30px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
+        .custom-section-header {
+        font-size: 12px;
+        padding: 8px;
+        padding-right: 30px;
+        font-weight: bold;
+        margin-bottom: 5px;
+        }   
 
         .po-header {
             text-align: right;
@@ -100,7 +100,7 @@
         .terms-box {
             border: 1px solid #ddd;
             padding: 10px;
-            margin-top: 0px;
+            margin-top: 1px;
         }
 
         .terms-table {
@@ -185,7 +185,7 @@
     <table class="layout-table">
         <tr>
             <td class="half-width">
-                <div class="section-header">Vendor Address:</div>
+               <div class="custom-section-header">Vendor Address:</div>
                 <div class="address-box">
                     <span class="supplier-name">{{ doc.supplier_name or "N/A" }}</span>
                     {{ doc.address_display or doc.supplier_address or "N/A" }}<br>
@@ -193,7 +193,7 @@
                 </div>
             </td>
             <td class="half-width">
-                <div class="section-header">Ship To:</div>
+                <div class="custom-section-header">Ship To:</div>
                 <div class="address-box">
                     <span class="warehouse-name">{{ doc.set_warehouse or "N/A" }}</span>
                     {{ doc.shipping_address_display or doc.address_display or "N/A" }}
