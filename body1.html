@@ -1,53 +1,129 @@
-<div class="margin-top"> 
-  <table class='table table-bordered table-condensed' style="width: 100%; border-collapse: collapse; border: 1px solid #000;"> 
-    <caption><strong> </strong></caption> 
-    <thead> 
-      <tr style="background-color: #f0f0f0;"> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Item Code</th> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Item Description</th> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Location</th> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">So No.</th> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Quantity</th> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Unit Price</th> 
-        <th style="border: 1px solid #000; padding: 8px; text-align: center;">Amount</th> 
-      </tr> 
-    </thead>
-    <tbody> 
-      {% for item in doc.items %} 
-      <tr> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.item_code }}</td> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
-          {{ item.description or item.item_name }}
-        </td> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.warehouse or "N/A" }}</td> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.sales_order or "N/A" }}</td> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ item.qty }}</td> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ frappe.format_value(item.rate, currency=doc.currency) }}</td> 
-        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ frappe.format_value(item.amount, currency=doc.currency) }}</td> 
-      </tr> 
-      {% endfor %}
-      
-      <!-- เพิ่มแถวสำหรับแสดงข้อมูล Reseller และ Company Name -->
-      <tr>
-        <td colspan="7" style="border: 1px solid #000; padding: 8px; text-align: left;">
-          {% if doc.supplier_name in ['Sangfor Technologies (Hong Kong) Limited', 'SOPHOS LTD'] %}
-            <strong>Reseller:</strong> {{ doc.get('reseller', '') }}<br>
-            <strong>Address:</strong> {{ doc.get('reseller_address', '') }}<br><br>
-            <strong>Company Name:</strong> {{ doc.get('user', '') }}<br>
-            <strong>Address:</strong> {{ doc.get('user_address', '') }}
-          {% else %}
-            <strong>Reseller:</strong> {{ doc.get('partner_customer_address', '') }}<br>
-            <strong>Address:</strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
-            <strong>Company Name:</strong> {{ doc.get('endcustomer_name', '') }}<br>
-            <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
-          {% endif %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: "TH Sarabun New", "TH Sarabun", Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 20px;
+        }
 
-          {% if doc.supplier_name != 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
-          <br><br>
-          <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
-          {% endif %}
-        </td>
-      </tr>
-    </tbody> 
-  </table> 
-</div>
+        /* Items Table - PDF Compatible */
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10px;
+        }
+
+        .items-table th {
+            background-color: #f0f0f0;
+            border: 1px solid #000;
+            padding: 8px 4px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .items-table td {
+            border: 1px solid #000;
+            padding: 8px 4px;
+            text-align: center;
+            font-size: 10px;
+            vertical-align: top;
+        }
+
+        .items-table td.description {
+            text-align: left;
+            max-width: 200px;
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .items-table td.number {
+            text-align: right;
+        }
+
+        .items-table td.center {
+            text-align: center;
+        }
+
+        .reseller-info {
+            padding: 8px;
+            text-align:  left;
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .reseller-info strong {
+            font-weight: bold;
+        }
+
+        /* Print specific */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }  
+            .items-table {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="margin-top">
+        <table class="items-table">
+            <caption><strong> </strong></caption>
+            <thead>
+                <tr>
+                    <th style="width: 12%;">Item Code</th>
+                    <th style="width: 30%;">Item Description</th>
+                    <th style="width: 12%;">Location</th>
+                    <th style="width: 12%;">So No.</th>
+                    <th style="width: 10%;">Quantity</th>
+                    <th style="width: 12%;">Unit Price</th>
+                    <th style="width: 12%;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in doc.items %}
+                <tr>
+                    <td class="center">{{ item.item_code }}</td>
+                    <td class="description">{{ item.description or item.item_name }}</td>
+                    <td class="center">{{ item.warehouse or "N/A" }}</td>
+                    <td class="center">{{ item.sales_order or "N/A" }}</td>
+                    <td class="number">{{ item.qty }}</td>
+                    <td class="number">{{ frappe.format_value(item.rate, currency=doc.currency) }}</td>
+                    <td class="number">{{ frappe.format_value(item.amount, currency=doc.currency) }}</td>
+                </tr>
+                {% endfor %}
+                
+                <!-- เพิ่มแถวสำหรับแสดงข้อมูล Reseller และ Company Name -->
+                <tr>
+                    <td colspan="7" class="reseller-info">
+                        {% if doc.supplier_name in ['Sangfor Technologies (Hong Kong) Limited', 'SOPHOS LTD'] %}
+                            <strong>Reseller:</strong> {{ doc.get('reseller', '') }}<br>
+                            <strong>Address:</strong> {{ doc.get('reseller_address', '') }}<br><br>
+                            <strong>Company Name:</strong> {{ doc.get('user', '') }}<br>
+                            <strong>Address:</strong> {{ doc.get('user_address', '') }}
+                        {% else %}
+                            <strong>Reseller:</strong> {{ doc.get('partner_customer_address', '') }}<br>
+                            <strong>Address:</strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
+                            <strong>Company Name:</strong> {{ doc.get('endcustomer_name', '') }}<br>
+                            <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
+                        {% endif %}
+
+                        {% if doc.supplier_name != 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
+                        <br><br>
+                        <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

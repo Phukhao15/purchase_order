@@ -1,32 +1,37 @@
-         <style>
-        /* Base Styles */
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Base Styles - PDF Compatible */
+        @page {
+            size: A4;
+            margin: 15mm;
+        }
+
         body {
-            font-family: TH Sarabun , TH Sarabun New;
+            font-family: "TH Sarabun New", "TH Sarabun", Arial, sans-serif;
             font-size: 12px;
             margin: 0;
             padding: 20px;
+            line-height: 1.4;
+            color: #000;
         }
 
-        /* Layout */
-        .row {
-            display: flex;
+        /* Layout using tables instead of flexbox */
+        .layout-table {
+            width: 100%;
+            border-collapse: collapse;
             margin-bottom: 15px;
-            padding-left: 0;
         }
 
-        .col-xs-6 {
+        .layout-table td {
+            vertical-align: top;
+            padding: 5px;
+        }
+
+        .half-width {
             width: 50%;
-            padding-right: 10px;
-        }
-
-        .col-xs-6:first-child {
-            padding-left: 0;
-            margin-left: 0;
-        }
-
-        .col-xs-6:last-child {
-            padding-right: 0;
-            padding-left: 10px;
         }
 
         /* Header Styles */
@@ -89,32 +94,37 @@
             padding: 10px;
             margin-bottom: 10px;
             min-height: 80px;
+            font-size: 12px;
         }
 
         .terms-box {
             border: 1px solid #ddd;
             padding: 10px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
+            margin-top: 0px;
+        }
+
+        .terms-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .terms-table td {
+            padding: 5px 15px;
+            width: 50%;
         }
 
         /* Text Elements */
         .supplier-name, .warehouse-name {
             font-weight: bold;
+            font-size: 12px;
             margin-bottom: 5px;
             display: block;
         }
 
         .tax-id {
             display: block;
-            margin-top: 0;
+            margin-top: 5px;
             font-size: 10px;
-        }
-
-        .terms-left, .terms-right {
-            flex: 1;
-            padding: 0 15px;
         }
 
         .terms-label {
@@ -128,68 +138,84 @@
             display: inline-block;
             padding-left: 30px;
         }
+
+        /* Print specific */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Draft Status -->
-    <div class="row margin-bottom">
-        <div class="col-xs-6">
-            {% if doc.docstatus == 0 %}
-            <div class="draft-status">DRAFT</div>
-            {% endif %}
-        </div>
-        <div class="col-xs-6"></div>
-    </div>
+    {% if doc.docstatus == 0 %}
+    <table class="layout-table">
+        <tr>
+            <td class="half-width">
+                <div class="draft-status">DRAFT</div>
+            </td>
+            <td class="half-width"></td>
+        </tr>
+    </table>
+    {% endif %}
 
     <!-- Document Header -->
-    <div class="row margin-bottom">
-        <div class="col-xs-6"></div>
-        <div class="col-xs-6">
-            <div class="section-header po-header">Purchase Order</div>
-            <table class="info-table">
-                <tr>
-                    <td>Date:</td>
-                    <td>{{ doc.transaction_date or doc.posting_date }}</td>
-                </tr>
-                <tr>
-                    <td>No:</td>
-                    <td>{{ doc.name }}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+    <table class="layout-table">
+        <tr>
+            <td class="half-width"></td>
+            <td class="half-width">
+                <div class="section-header po-header">Purchase Order</div>
+                <table class="info-table">
+                    <tr>
+                        <td>Date:</td>
+                        <td>{{ doc.transaction_date or doc.posting_date }}</td>
+                    </tr>
+                    <tr>
+                        <td>No:</td>
+                        <td>{{ doc.name }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
 
     <!-- Address Information -->
-    <div class="row margin-bottom">
-        <div class="col-xs-6">
-            <div class="section-header">Vendor Address:</div>
-            <div class="address-box">
-                <span class="supplier-name">{{ doc.supplier_name or "N/A" }}</span>
-                {{ doc.address_display or doc.supplier_address or "N/A" }}<br>
-                <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ doc.tax_id or "N/A" }}</span>
-            </div>
-        </div>
-        <div class="col-xs-6">
-            <div class="section-header">Ship To:</div>
-            <div class="address-box">
-                <span class="warehouse-name">{{ doc.set_warehouse or "N/A" }}</span>
-                {{ doc.shipping_address_display or doc.address_display or "N/A" }}
-            </div>
-        </div>
-    </div>
+    <table class="layout-table">
+        <tr>
+            <td class="half-width">
+                <div class="section-header">Vendor Address:</div>
+                <div class="address-box">
+                    <span class="supplier-name">{{ doc.supplier_name or "N/A" }}</span>
+                    {{ doc.address_display or doc.supplier_address or "N/A" }}<br>
+                    <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ doc.tax_id or "N/A" }}</span>
+                </div>
+            </td>
+            <td class="half-width">
+                <div class="section-header">Ship To:</div>
+                <div class="address-box">
+                    <span class="warehouse-name">{{ doc.set_warehouse or "N/A" }}</span>
+                    {{ doc.shipping_address_display or doc.address_display or "N/A" }}
+                </div>
+            </td>
+        </tr>
+    </table>
 
     <!-- Terms Information -->
-    <div class="row margin-bottom">
-        <div class="col-xs-12">
-            <div class="terms-box">
-                <div class="terms-left">
+    <div class="terms-box">
+        <table class="terms-table">
+            <tr>
+                <td>
                     <span class="terms-label">Payment Term:</span>
                     <span class="terms-value">{{ doc.payment_terms_template or "NET 30 DAYS" }}</span>
-                </div>
-                <div class="terms-right">
+                </td>
+                <td>
                     <span class="terms-label">Delivery Date:</span>
                     <span class="terms-value">{{ doc.schedule_date or "N/A" }}</span>
-                </div>
-            </div>
-        </div>
+                </td>
+            </tr>
+        </table>
     </div>
+</body>
+</html>
