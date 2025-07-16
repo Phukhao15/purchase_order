@@ -80,13 +80,16 @@
                     Please refer PO Number on your Invoices
                 </div>
                  <!--Amount in Words -->
-                <div class="amount-in-words">
-                    {% if doc.currency == "THB" %}
-                        {{ frappe.utils.money_in_thai(doc.grand_total) }}
-                    {% else %}
-                        {{ frappe.utils.money_in_words(doc.grand_total, doc.currency).upper() }} ONLY
-                    {% endif %}
-                </div>
+                 <div class="amount-in-words">
+    {% if doc.currency == "THB" %}
+        {{ frappe.utils.money_in_thai(doc.grand_total) }}
+    {% else %}
+        {% set clean_currency = doc.currency.replace("-P", "") %}
+        {% set money_text = frappe.utils.money_in_words(doc.grand_total, clean_currency).upper() %}
+        {% set final_text = money_text.replace("USD-P", "").replace("USD", "").replace("DOLLARS", "").replace("DOLLAR", "") %}
+        {{ final_text.strip() }} 
+    {% endif %}
+</div>
             </div>
             
             <!-- Right Section - Summary Table -->
@@ -96,7 +99,7 @@
                         <div class="label">Net Goods/Service</div>
                         <div class="amount">
                             {% if doc.currency != "THB" %}
-                                {{ "{:,.2f}".format(doc.total) }} {{ doc.currency }}
+                                {{ "{:,.2f}".format(doc.total) }}   <!-- {{ doc.currency }} -->
                             {% else %}
                                 {{ "{:,.2f}".format(doc.total) }}
                             {% endif %}
@@ -106,7 +109,7 @@
                         <div class="label">Discount</div>
                         <div class="amount">
                             {% if doc.currency != "THB" %}
-                                {{ "{:,.2f}".format(doc.discount_amount) }} {{ doc.currency }}
+                               {{ "{:,.2f}".format(doc.discount_amount) }}     <!--   {{ doc.currency }} -->
                             {% else %}
                                 {{ "{:,.2f}".format(doc.discount_amount) }}
                             {% endif %}
@@ -116,34 +119,56 @@
                         <div class="label">Total</div>
                         <div class="amount">
                             {% if doc.currency != "THB" %}
-                                {{ "{:,.2f}".format(doc.total - doc.discount_amount) }} {{ doc.currency }}
+                                {{ "{:,.2f}".format(doc.total - doc.discount_amount) }}   <!-- {{ doc.currency }} -->
                             {% else %}
                                 {{ "{:,.2f}".format(doc.total - doc.discount_amount) }}
                             {% endif %}
                         </div>
                     </div>
-                    <div class="summary-row">
+                 <div class="summary-row">
                         <div class="label">
                             VAT 
-                            {% set vat_rate = 0 %}
-                            {% for tax in doc.taxes %}
-                                {% if tax.rate %}
-                                    {% set vat_rate = tax.rate %}
-                                {% endif %}
-                            {% endfor %}
-                            {{ "{:.0f}".format(vat_rate) }}%
+                            {% if "POF" in doc.name %}
+                                0%
+                            {% elif "POD" in doc.name %}
+                                7%
+                            {% else %}
+                                {% set vat_rate = 0 %}
+                                {% for tax in doc.taxes %}
+                                    {% if tax.rate %}
+                                        {% set vat_rate = tax.rate %}
+                                    {% endif %}
+                                {% endfor %}
+                                {{ "{:.0f}".format(vat_rate) }}%
+                            {% endif %}
                         </div>
                         <div class="amount">
-                            {% set total_tax = 0 %}
-                            {% for tax in doc.taxes %}
-                                {% if tax.tax_amount %}
-                                    {% set total_tax = total_tax + tax.tax_amount %}
+                            {% if "POF" in doc.name %}
+                                {% if doc.currency != "THB" %}
+                                    0.00 <!-- {{ doc.currency }} -->
+                                {% else %}
+                                    0.00
                                 {% endif %}
-                            {% endfor %}
-                            {% if doc.currency != "THB" %}
-                                {{ "{:,.2f}".format(total_tax) }} {{ doc.currency }}
+                            {% elif "POD" in doc.name %}
+                                {% set total_before_vat = doc.total - doc.discount_amount %}
+                                {% set vat_amount = total_before_vat * 0.07 %}
+                                {% if doc.currency != "THB" %}
+                                    {{ "{:,.2f}".format(vat_amount) }}  <!-- {{ doc.currency }} -->
+                                {% else %}
+                                    {{ "{:,.2f}".format(vat_amount) }}
+                                {% endif %}
                             {% else %}
-                                {{ "{:,.2f}".format(total_tax) }}
+                                {% set total_tax = 0 %}
+                                {% for tax in doc.taxes %}
+                                    {% if tax.tax_amount %}
+                                        {% set total_tax = total_tax + tax.tax_amount %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% if doc.currency != "THB" %}
+                                    {{ "{:,.2f}".format(total_tax) }}   <!-- {{ doc.currency }} -->
+                                {% else %}
+                                    {{ "{:,.2f}".format(total_tax) }}
+                                {% endif %}
                             {% endif %}
                         </div>
                     </div>
@@ -151,7 +176,7 @@
                         <div class="label">Total Amount</div>
                         <div class="amount">
                             {% if doc.currency != "THB" %}
-                                {{ "{:,.2f}".format(doc.grand_total) }} {{ doc.currency }}
+                                {{ "{:,.2f}".format(doc.grand_total) }}   <!--  {{ doc.currency }} -->
                             {% else %}
                                 {{ "{:,.2f}".format(doc.grand_total) }}
                             {% endif %}

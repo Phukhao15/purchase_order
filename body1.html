@@ -42,8 +42,10 @@
             <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
           {% endif %}
 
+          {% if doc.supplier_name != 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
           <br><br>
           <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
+          {% endif %}
         </td>
       </tr>
     </tbody> 
