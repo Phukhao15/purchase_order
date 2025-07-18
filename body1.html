@@ -3,16 +3,16 @@
         font-family: "TH Sarabun New", "TH Sarabun", Arial, sans-serif;
         font-size: 12px;
         margin: 0;
-        padding: 20px;
+        padding: 10px; /* ลด padding */
     }
 
     /* Items Table - PDF Compatible */
     .items-table {
         width: 100%;
         border-collapse: collapse;
-        margin: 20px 0;
+        margin: 10px 0; /* ลด margin */
         font-size: 10px;
-        page-break-inside: avoid;
+        /* เอา page-break-inside: avoid; ออก */
     }
 
     .items-table th {
@@ -53,10 +53,38 @@
         font-weight: bold;
     }
 
-    /* Print specific */
+    /* ปรับปรุงการตั้งค่าสำหรับการพิมพ์ */
     @media print {
         body {
             color-adjust: exact;
+            padding: 5px; /* ลด padding */
+            margin: 0;
+        }
+        
+        /* อนุญาตให้ตารางแบ่งหน้าได้ */
+        .items-table {
+            page-break-inside: auto;
+        }
+        
+        .items-table tbody tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        
+        /* ป้องกันการแบ่งหน้าสำหรับ header */
+        .items-table thead {
+            display: table-header-group;
+        }
+        
+        .items-table thead tr {
+            page-break-inside: avoid;
+            page-break-after: avoid;
+        }
+        
+        /* ปรับ page margin */
+        @page {
+            size: A4;
+            margin: 10mm;
         }
     }
 </style>

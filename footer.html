@@ -3,15 +3,15 @@
         font-family: "TH Sarabun New", "TH Sarabun", Arial, sans-serif;
         font-size: 12px;
         margin: 0;
-        padding: 10px; /* ลด padding เพื่อประหยัดพื้นที่ */
+        padding: 5px; /* ลด padding */
     }
 
     .invoice-footer {
         border-top: 2px solid #000;
         border-bottom: 2px solid #000;
-        padding: 8px 0; /* ลด padding */
-        margin-top: 15px; /* ลด margin */
-        page-break-inside: avoid; /* ป้องกันการแบ่งส่วน footer */
+        padding: 8px 0;
+        margin-top: 10px; /* ลด margin */
+        page-break-inside: avoid;
     }
     
     .footer-table {
@@ -21,12 +21,12 @@
 
     .footer-table td {
         vertical-align: top;
-        padding: 8px; /* ลด padding */
+        padding: 8px;
     }
     
     .left-section {
         width: 60%;
-        padding-right: 15px; /* ลด padding */
+        padding-right: 15px;
     }
     
     .right-section {
@@ -35,14 +35,14 @@
     
     .po-reference {
         font-weight: bold;
-        margin-bottom: 80px; /* ลด margin */
+        margin-bottom: 60px; /* ลด margin */
         font-size: 10px;
     }
     
     .amount-in-words {
         font-weight: bold;
         font-size: 10px;
-        margin-top: 3px; /* ลด margin */
+        margin-top: 3px;
     }
 
     .summary-table {
@@ -53,7 +53,7 @@
     }
 
     .summary-table td {
-        padding: 2px 6px; /* ลด padding */
+        padding: 2px 6px;
     }
 
     .summary-table td:first-child {
@@ -69,29 +69,32 @@
     .total-row td {
         border-top: 1px solid #000;
         font-weight: bold;
-        padding-top: 6px; /* ลด padding */
+        padding-top: 6px;
         font-size: 10px;
     }
 
     /* ปรับปรุงการตั้งค่าสำหรับการพิมพ์ */
     @media print {
         body {
-            padding: 5px;
+            padding: 0;
+            margin: 0;
             color-adjust: exact;
             -webkit-print-color-adjust: exact;
         }
         
-        /* หลีกเลี่ยงการแบ่งหน้าภายในองค์ประกอบสำคัญ */
+        /* ป้องกันการแบ่งหน้าภายใน footer */
         .invoice-footer {
             page-break-inside: avoid;
+            page-break-before: auto; /* เปลี่ยนจาก always เป็น auto */
         }
         
+        /* ลบการบังคับแบ่งหน้า */
         tr {
             page-break-inside: avoid;
             page-break-after: auto;
         }
         
-        /* กำหนด margin ขณะพิมพ์ */
+        /* ปรับ page margin */
         @page {
             size: A4;
             margin: 10mm;

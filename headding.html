@@ -1,5 +1,4 @@
 <style>
-
     body {
         font-family: "TH Sarabun New", "TH Sarabun", Arial, sans-serif;
         font-size: 12px;
@@ -9,7 +8,6 @@
         color: #000;
     }
 
-    
     .layout-table {
         width: 100%;
         border-collapse: collapse;
@@ -21,7 +19,6 @@
         padding: 3px;
     }
 
-  
     .custom-section-header {
         font-size: 12px;
         padding: 5px;
@@ -43,7 +40,6 @@
         margin-bottom: 5px;
     }
 
-    
     .info-table {
         width: auto; 
         margin-left: auto;
@@ -69,7 +65,6 @@
         font-size: 10px;
     }
 
- 
     .address-box {
         border: 1px solid #ddd;
         padding: 8px;
@@ -84,7 +79,7 @@
         border: 1px solid #ddd;
         padding: 8px;
         margin-top: 5px;
-        page-break-inside: avoid;
+        /* เอา page-break-inside: avoid; ออก */
     }
 
     .terms-table {
@@ -96,7 +91,6 @@
         padding: 3px 10px;
         width: 50%;
     }
-
 
     .supplier-name, .warehouse-name {
         font-weight: bold;
@@ -123,20 +117,27 @@
         padding-left: 20px;
     }
 
-    .avoid-break {
-        page-break-inside: avoid;
-    }
-    
+    /* ปรับปรุงการตั้งค่าสำหรับการพิมพ์ */
     @media print {
         body {
-            padding: 0;
-            margin: 0;
+            padding: 5px;
+            margin: 5px;
+            /* ลด padding และ margin */
         }
+        
+        /* ลบการบังคับแบ่งหน้า */
         .page-break {
-            page-break-after: always;
+            page-break-after: auto;
         }
+        
         .no-break {
             page-break-inside: avoid;
+        }
+        
+        /* ปรับ page margin */
+        @page {
+            size: A4;
+            margin: 10mm 10mm 10mm 10mm;
         }
     }
 </style>
