@@ -117,6 +117,15 @@
         padding-left: 20px;
     }
 
+    /* เพิ่ม CSS สำหรับข้อความใหม่ */
+    .supply-text {
+        text-align: left;
+        font-size: 10px;
+        font-weight: bold;
+        margin: 10px 0;
+        padding: 8px;
+    }
+
     /* ปรับปรุงการตั้งค่าสำหรับการพิมพ์ */
     @media print {
         body {
@@ -196,7 +205,7 @@
         <tr>
             <td>
                 <span class="terms-label">Payment Term:</span>
-                <span class="terms-value">{{ doc.payment_terms_template or "NET 30 DAYS" }}</span>
+                <span class="terms-value">{{ doc.payment_terms_template }}</span>
             </td>
             <td>
                 <span class="terms-label">Delivery Date:</span>
@@ -211,5 +220,8 @@
             </td>
         </tr>
     </table>
+</div>
+<div class="supply-text">
+    Please supply and diliver following goods of IT Green public company limited
 </div>
 </div>
