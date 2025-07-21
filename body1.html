@@ -130,9 +130,15 @@
                         <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
                     {% endif %}
 
-                    {% if doc.supplier_name != 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
                     <br><br>
-                    <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
+                    {% if doc.supplier_name == 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
+                        {% if doc.get('hpe_claim_code', '') %}
+                            <strong>HPE Claim Code:</strong> {{ doc.get('hpe_claim_code', '') }}
+                        {% endif %}
+                    {% else %}
+                        {% if doc.get('quote_id', '') %}
+                            <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
+                        {% endif %}
                     {% endif %}
                 </td>
             </tr>
