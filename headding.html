@@ -185,16 +185,19 @@
         <td style="width: 50%;"> 
            <div class="custom-section-header">Vendor Address:</div>
             <div class="address-box">
-                <span class="supplier-name">{{ doc.supplier_name or "N/A" }}</span>
-                {{ doc.address_display or doc.supplier_address or "N/A" }}<br>
-                <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ doc.tax_id or "N/A" }}</span>
+                <span class="supplier-name">{{ doc.supplier_name }}</span>
+                {{ doc.address_display}}<br>
+
+                {% set w_tax = frappe.db.get_value('Supplier', doc.supplier,'tax_id') %}
+                <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ w_tax }}</span>
+                
             </div>
         </td>
         <td style="width: 50%;">
             <div class="custom-section-header">Ship To:</div>
             <div class="address-box">
-                <span class="warehouse-name">{{ doc.set_warehouse or "N/A" }}</span>
-                {{ doc.shipping_address_display or doc.address_display or "N/A" }}
+                <span class="warehouse-name">{{ doc.set_warehouse  }}</span>
+                {{ doc.shipping_address_display }}
             </div>
         </td>
     </tr>

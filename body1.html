@@ -105,39 +105,44 @@
         <tbody>
             {% for item in doc.items %}
             <tr>
-                <td class="center">{{ item.item_code or "" }}</td>
-                <td class="description">{{ item.description or item.item_name or "" }}</td>
-                <td class="center">{{ item.warehouse or "N/A" }}</td>
-                <td class="center">{{ item.sales_order or "N/A" }}</td>
+                <td class="center">{{ item.item_code}}</td>
+                <td class="description">{{ item.description}}</td>
+                <td class="center">{{ item.warehouse}}</td>
+                <td class="center">{{ item.sales_order }}</td>
                 <td class="number">{{ item.qty }}</td>
                 <td class="number">{{ frappe.format_value(item.rate, currency=doc.currency) }}</td>
                 <td class="number">{{ frappe.format_value(item.amount, currency=doc.currency) }}</td>
             </tr>
             {% endfor %}
-            
             <!-- Reseller and Company Information -->
             <tr>
                 <td colspan="7" class="reseller-info">
                     {% if doc.supplier_name in ['Sangfor Technologies (Hong Kong) Limited', 'SOPHOS LTD'] %}
                         <strong>Reseller:</strong> {{ doc.get('reseller', '') }}<br>
-                        <strong>Address:</strong> {{ doc.get('reseller_address', '') }}<br><br>
-                        <strong>Company Name:</strong> {{ doc.get('user', '') }}<br>
-                        <strong>Address:</strong> {{ doc.get('user_address', '') }}
+                        <strong></strong> {{ doc.get('reseller_address', '') }}<br><br>
+                        <strong>End User:</strong> {{ doc.get('user', '') }}<br>
+                        <strong></strong> {{ doc.get('user_address', '') }}
                     {% else %}
-                        <strong>Reseller:</strong> {{ doc.get('partner_customer_address', '') }}<br>
-                        <strong>Address:</strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
-                        <strong>Company Name:</strong> {{ doc.get('endcustomer_name', '') }}<br>
-                        <strong>Address:</strong> {{ doc.get('endcustomer_address', '') }}
+                        {% set w_resell = frappe.db.get_value('Customer', doc.partner_customer_name,'customer_name') %}
+                        {% set w_companyname = frappe.db.get_value('Endcustomer', doc.endcustomer_name,'customer_name') %}
+                        
+                        <strong>Reseller:</strong> {{ w_resell or doc.get('partner_customer_address', '') or "" }}<br>
+                        <strong></strong> {{ doc.get('partner_customer_full_address', '') }}<br><br>
+                        <strong>End User:</strong> {{ w_companyname or doc.get('endcustomer_name', '') or "" }}<br>
+                        <strong></strong> {{ doc.get('endcustomer_address', '') }}
                     {% endif %}
 
                     <br><br>
                     {% if doc.supplier_name == 'บริษัท ฮิวเลตต์-แพคการ์ด (ประเทศไทย) จำกัด' %}
                         {% if doc.get('hpe_claim_code', '') %}
-                            <strong>HPE Claim Code:</strong> {{ doc.get('hpe_claim_code', '') }}
+                            <strong>HPE Claim Code:</strong> {{ doc.get('hpe_claim_code') }}<br>
+                        {% endif %}
+                        {% if doc.get('contact_display', '') %}
+                            <strong>Sale Person:</strong> {{ doc.get('contact_display') }}
                         {% endif %}
                     {% else %}
                         {% if doc.get('quote_id', '') %}
-                            <strong>Quote ID:</strong> {{ doc.get('quote_id', '') }}
+                            <strong>Quote ID:</strong> {{ doc.get('quote_id') }}
                         {% endif %}
                     {% endif %}
                 </td>
