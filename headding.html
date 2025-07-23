@@ -186,7 +186,38 @@
            <div class="custom-section-header">Vendor Address:</div>
             <div class="address-box">
                 <span class="supplier-name">{{ doc.supplier_name }}</span>
-                {{ doc.address_display}}<br>
+               {% set address_lines = (doc.address_display or "").split('\n') %}
+{% set branch_name_replaced = false %}
+{% for line in address_lines %}
+    {% set line = line.strip() %}
+    
+    {% if line %}
+        {% if not branch_name_replaced and line[:5].isdigit() %}
+            {% set branch_code = line[:5] %}
+            {% set remaining_address = line[5:].strip() %}
+            {% if branch_code == '00000' %}
+                {% if 'ITG-POD' in doc.name %}
+                    สำนักงานใหญ่{% if remaining_address %} {{ remaining_address }}{% endif %}
+                {% elif 'ITG-POF' in doc.name %}
+                    Head Quarter{% if remaining_address %} {{ remaining_address }}{% endif %}
+                {% else %}
+                    {{ line }}
+                {% endif %}
+            {% else %}
+                {% if 'ITG-POD' in doc.name %}
+                    สาขาที่ {{ branch_code }}{% if remaining_address %} {{ remaining_address }}{% endif %}
+                {% elif 'ITG-POF' in doc.name %}
+                    Branch {{ branch_code }}{% if remaining_address %} {{ remaining_address }}{% endif %}
+                {% else %}
+                    {{ line }}
+                {% endif %}
+            {% endif %}
+            {% set branch_name_replaced = true %}
+        {% else %}
+            {{ line }}
+        {% endif %}
+    {% endif %}
+{% endfor %}
 
                 {% set w_tax = frappe.db.get_value('Supplier', doc.supplier,'tax_id') %}
                 <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ w_tax }}</span>
