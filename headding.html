@@ -8,6 +8,7 @@
         color: #000;
     }
 
+    /* Layout Tables */
     .layout-table {
         width: 100%;
         border-collapse: collapse;
@@ -19,6 +20,7 @@
         padding: 3px;
     }
 
+    /* Headers */
     .custom-section-header {
         font-size: 12px;
         padding: 5px;
@@ -40,6 +42,7 @@
         margin-bottom: 5px;
     }
 
+    /* Info Table */
     .info-table {
         width: auto; 
         margin-left: auto;
@@ -65,34 +68,18 @@
         font-size: 10px;
     }
 
+    /* Address Boxes */
     .address-box {
         border: 1px solid #ddd;
         padding: 8px;
         margin-bottom: 8px;
         min-height: 90px;
-        /* เอา max-height ออกเพื่อให้ขยายได้ตามเนื้อหา */
         font-size: 12px;
-        /* เปลี่ยนจาก overflow: hidden เป็น visible */
         overflow: visible;
     }
-    .terms-box {
-        border: 1px solid #ddd;
-        padding: 8px;
-        margin-top: 5px;
-        /* เอา page-break-inside: avoid; ออก */
-    }
 
-    .terms-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .terms-table td {
-        padding: 3px 10px;
-        width: 50%;
-    }
-
-    .supplier-name, .warehouse-name {
+    .supplier-name, 
+    .warehouse-name {
         font-weight: bold;
         font-size: 12px;
         margin-bottom: 3px;
@@ -103,6 +90,23 @@
         display: block;
         margin-top: 3px;
         font-size: 10px;
+    }
+
+    /* Terms Section */
+    .terms-box {
+        border: 1px solid #ddd;
+        padding: 8px;
+        margin-top: 5px;
+    }
+
+    .terms-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .terms-table td {
+        padding: 3px 10px;
+        width: 50%;
     }
 
     .terms-label {
@@ -117,7 +121,7 @@
         padding-left: 20px;
     }
 
-    /* เพิ่ม CSS สำหรับข้อความใหม่ */
+    /* Supply Text */
     .supply-text {
         text-align: left;
         font-size: 10px;
@@ -126,15 +130,13 @@
         padding: 8px;
     }
 
-    /* ปรับปรุงการตั้งค่าสำหรับการพิมพ์ */
+    /* Print Styles */
     @media print {
         body {
             padding: 5px;
             margin: 5px;
-            /* ลด padding และ margin */
         }
         
-        /* ลบการบังคับแบ่งหน้า */
         .page-break {
             page-break-after: auto;
         }
@@ -143,7 +145,6 @@
             page-break-inside: avoid;
         }
         
-        /* ปรับ page margin */
         @page {
             size: A4;
             margin: 10mm 10mm 10mm 10mm;
@@ -152,110 +153,123 @@
 </style>
 
 <div class="no-break">
-{% if doc.docstatus == 0 %}
-<div class="draft-status">DRAFT</div>
-{% endif %}
-
-<table class="layout-table">
-    <tr>
-        <td style="width: 60%;">
-            
-        </td>
-        <td style="width: 40%;">
-            <div class="section-header po-header">Purchase Order</div>
-            <table class="info-table">
-                <tr>
-                    <td>Date:</td>
-                    <td>
-                        {% set date_obj = frappe.utils.getdate(doc.transaction_date or doc.posting_date) %}
-                        {{ "{:02d}/{:02d}/{}".format(date_obj.day, date_obj.month, date_obj.year) }}
-                    </td>
-                </tr>
-                <tr>
-                    <td>No:</td>
-                    <td>{{ doc.name }}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
-
-<table class="layout-table">
-    <tr>
-        <td style="width: 50%;"> 
-           <div class="custom-section-header">Vendor Address:</div>
-            <div class="address-box">
-                <span class="supplier-name">{{ doc.supplier_name }}</span>
-               {% set address_lines = (doc.address_display or "").split('\n') %}
-{% set branch_name_replaced = false %}
-{% for line in address_lines %}
-    {% set line = line.strip() %}
-    
-    {% if line %}
-        {% if not branch_name_replaced and line[:5].isdigit() %}
-            {% set branch_code = line[:5] %}
-            {% set remaining_address = line[5:].strip() %}
-            {% if branch_code == '00000' %}
-                {% if 'ITG-POD' in doc.name %}
-                    สำนักงานใหญ่{% if remaining_address %} {{ remaining_address }}{% endif %}
-                {% elif 'ITG-POF' in doc.name %}
-                    Head Quarter{% if remaining_address %} {{ remaining_address }}{% endif %}
-                {% else %}
-                    {{ line }}
-                {% endif %}
-            {% else %}
-                {% if 'ITG-POD' in doc.name %}
-                    สาขาที่ {{ branch_code }}{% if remaining_address %} {{ remaining_address }}{% endif %}
-                {% elif 'ITG-POF' in doc.name %}
-                    Branch {{ branch_code }}{% if remaining_address %} {{ remaining_address }}{% endif %}
-                {% else %}
-                    {{ line }}
-                {% endif %}
-            {% endif %}
-            {% set branch_name_replaced = true %}
-        {% else %}
-            {{ line }}
-        {% endif %}
+    <!-- Draft Status -->
+    {% if doc.docstatus == 0 %}
+        <div class="draft-status">DRAFT</div>
     {% endif %}
-{% endfor %}
 
-                {% set w_tax = frappe.db.get_value('Supplier', doc.supplier,'tax_id') %}
-                <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ w_tax }}</span>
-                
-            </div>
-        </td>
-        <td style="width: 50%;">
-            <div class="custom-section-header">Ship To:</div>
-            <div class="address-box">
-                <span class="warehouse-name">{{ doc.set_warehouse  }}</span>
-                {{ doc.shipping_address_display }}
-            </div>
-        </td>
-    </tr>
-</table>
-
-<div class="terms-box">
-    <table class="terms-table">
+    <!-- Header Section -->
+    <table class="layout-table">
         <tr>
-            <td>
-                <span class="terms-label">Payment Term:</span>
-                <span class="terms-value">{{ doc.payment_terms_template }}</span>
+            <td style="width: 60%;">
+                <!-- Left side can be used for company logo or info -->
             </td>
-            <td>
-                <span class="terms-label">Delivery Date:</span>
-                <span class="terms-value">
-                    {% if doc.schedule_date %}
-                        {% set delivery_date = frappe.utils.getdate(doc.schedule_date) %}
-                        {{ "{:02d}/{:02d}/{}".format(delivery_date.day, delivery_date.month, delivery_date.year) }}
-                    {% else %}
-                        N/A
-                    {% endif %}
-                </span>
+            <td style="width: 40%;">
+                <div class="section-header po-header">Purchase Order</div>
+                <table class="info-table">
+                    <tr>
+                        <td>Date:</td>
+                        <td>
+                            {% set date_obj = frappe.utils.getdate(doc.transaction_date or doc.posting_date) %}
+                            {{ "{:02d}/{:02d}/{}".format(date_obj.day, date_obj.month, date_obj.year) }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>No:</td>
+                        <td>{{ doc.name }}</td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
-</div>
-<div class="supply-text">
-    Please supply and diliver following goods of IT Green public company limited
-</div>
+
+    <!-- Address Section -->
+    <table class="layout-table">
+        <tr>
+            <!-- Vendor Address -->
+            <td style="width: 50%;"> 
+                <div class="custom-section-header">Vendor Address:</div>
+                <div class="address-box">
+                    <span class="supplier-name">{{ doc.supplier_name }}</span>
+                    
+                    <!-- Process Address Display -->
+                    {% set address_lines = (doc.address_display).split('\n') %}
+                    {% set branch_name_replaced = false %}
+                    
+                    {% for line in address_lines %}
+                        {% set line = line.strip() %}
+                        
+                        {% if line %}
+                            {% if not branch_name_replaced and line[:5].isdigit() %}
+                                {% set branch_code = line[:5] %}
+                                {% set remaining_address = line[5:].strip() %}
+                                
+                                {% if branch_code == '00000' %}
+                                    {% if 'ITG-POD' in doc.name %}
+                                        สำนักงานใหญ่{% if remaining_address %} {{ remaining_address }}{% endif %}
+                                    {% elif 'ITG-POF' in doc.name %}
+                                        Head Quarter{% if remaining_address %} {{ remaining_address }}{% endif %}
+                                    {% else %}
+                                        {{ line }}
+                                    {% endif %}
+                                {% else %}
+                                    {% if 'ITG-POD' in doc.name %}
+                                        สาขาที่ {{ branch_code }}{% if remaining_address %} {{ remaining_address }}{% endif %}
+                                    {% elif 'ITG-POF' in doc.name %}
+                                        Branch {{ branch_code }}{% if remaining_address %} {{ remaining_address }}{% endif %}
+                                    {% else %}
+                                        {{ line }}
+                                    {% endif %}
+                                {% endif %}
+                                {% set branch_name_replaced = true %}
+                            {% else %}
+                                {{ line }}
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Tax ID -->
+                    {% set w_tax = frappe.db.get_value('Supplier', doc.supplier,'tax_id') %}
+                    <span class="tax-id">เลขประจำตัวผู้เสียภาษี: {{ w_tax }}</span>
+                </div>
+            </td>
+            
+            <!-- Ship To Address -->
+            <td style="width: 50%;">
+                <div class="custom-section-header">Ship To:</div>
+                <div class="address-box">
+                    <span class="warehouse-name">{{ doc.set_warehouse }}</span>
+                    {{ doc.shipping_address_display }}
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Terms Section -->
+    <div class="terms-box">
+        <table class="terms-table">
+            <tr>
+                <td>
+                    <span class="terms-label">Payment Term:</span>
+                    <span class="terms-value">{{ doc.payment_terms_template }}</span>
+                </td>
+                <td>
+                    <span class="terms-label">Delivery Date:</span>
+                    <span class="terms-value">
+                        {% if doc.schedule_date %}
+                            {% set delivery_date = frappe.utils.getdate(doc.schedule_date) %}
+                            {{ "{:02d}/{:02d}/{}".format(delivery_date.day, delivery_date.month, delivery_date.year) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </span>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Supply Text -->
+    <div class="supply-text">
+        Please supply and diliver following goods of IT Green public company limited
+    </div>
 </div>
